@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import userRoute from './routes/userRoute.js'
 import productRoute from './routes/productRoute.js'
 import fileUpload from "express-fileupload";
+import contactRoute from "./routes/contactRoute.js"
+import blogRoute from "./routes/blogRoute.js"
+import cors from 'cors';
 
 const port=5000;
 
@@ -22,7 +25,7 @@ app.get('/',(req,res)=>{
   return res.status(200).json({data:'Hello'})
 
 })
-
+app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
 app.use('/uploads', express.static('uploads'))
 app.use(fileUpload({
   limits: { fileSize: 1 * 1024 * 1024 },
@@ -31,3 +34,5 @@ app.use(fileUpload({
 
 app.use('/api/users',userRoute)
 app.use('/api/products',productRoute)
+app.use('/api/contacts',contactRoute)
+app.use('/api/blogs',blogRoute)
