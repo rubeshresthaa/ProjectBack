@@ -56,6 +56,21 @@ return res.status(200).json({
 
 }
 
+export const getProductById=async (req,res)=>{
+  const {id}=req.params;
+  try {
+    const product=await Product.findById(id).select('-createdAt -updatedAt -__v').populate({
+      path: 'reviews.user',
+      select: 'fullname email'
+    });
+    res.status(200).json(product)
+  } catch (err) {
+    res.status(400).json({error:`${err}`})
+    
+  }
+
+}
+
 
 export const addProduct=async (req,res)=>{
   const{title,description,breeds,category,price,stock}=req.body;
@@ -80,3 +95,67 @@ export const addProduct=async (req,res)=>{
   }
 
 }
+
+export const updateProduct=async (req,res)=>{
+  const {id}=req.params;
+  try {
+    if(mongoose.isValidObjectId(id)){
+      const isExist=await Product.findById(id);
+      if(isExist){
+        const updateObj={
+          title:req.body.title || isExist.title,
+          description:req.body.description || isExist.description,
+          breeds:req.body.breeds || isExist.breeds,
+          price:Number(req.body.price) || isExist.price,
+          category:req.body.category || isExist.category,
+          stock:Number(req.body.stock) || isExist.stock
+        };
+        if(req.imagePath){
+          await isExist.updateOne({
+            ...updateObj,
+            image:req.imagePath
+          });
+          fs.unlink(`.${isExist.image}`,(err)=>{
+
+          });
+        }else{
+          await isExist.updateOne(updateObj);
+        }
+        return res.status(200).json({ message: 'succesfully updated' });
+      }
+    }
+
+    if(req.imagePath) fs.unlink(`.${req.imagePath}`,(err)=>{
+
+    });
+    return res.status(400).json({ message: 'please provide valid id' });
+    
+  } catch (err) {
+    if (req.imagePath) fs.unlink(`.${req.imagePath}`, (err) => {
+
+    });
+    return res.status(400).json({ message: `${err}` });
+  }
+    
+  }
+
+  export const removeProduct=async (req,res)=>{
+    const {id}=req.params;
+    try {
+      if(mongoose.isValidObjectId(id)){
+        const isExist=await Product.findById(id)
+        if(isExist){
+          await Product.deleteOne();
+          fs.unlink(`.${isExist.image}`,(err)=>{
+
+          });
+          res.status(200).json({message:'Successfully Deleted'})
+        }
+      }
+      res.status(400).json({message:'Please Provide valid Id'})
+    } catch (err) {
+      return res.status(400).json({ error: `${err}` });
+    }
+
+  }
+

@@ -43,3 +43,22 @@ export const validFile = (req, res, next) => {
     return res.status(400).json({ message: 'Unsupported file type' });
   }
 };
+
+
+export const updateFile=(req,res,next)=>{
+  const imageFile=req.file?.image;
+
+  if(!imageFile) next();
+
+  const extType=path.extname(imageFile.name);
+  if(supportType.includes(extType)){
+    imageFile.mv(`./uploads/${imageFile.name}`,(err)=>{
+      if (err) return res.status(400).json({ message: err });
+      req.imagePath = `/uploads/${imageFile.name}`;
+      next();
+    })
+  }else{
+    return res.status(400).json({ message: 'please provide valid image' });
+  }
+
+}

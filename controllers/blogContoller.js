@@ -11,6 +11,26 @@ export const getBlogs=async (req,res)=>{
   }
 }
 
+export const getBlogsById=async (req,res)=>{
+  const {id}=req.params;
+  try {
+    if (!id) {
+      return res.status(400).json({ error: "Blog ID is required." });
+    }
+
+    const blog=await Blog.findById(id);
+    
+    if (!blog) {
+      return res.status(404).json({ error: "Blog not found." });
+    }
+    return res.status(200).json(blog)
+    
+  } catch (err) {
+    return res.status(400).json({error :`${err}`})
+  }
+}
+
+
 export const addBlog=async(req,res)=>{
   const {title,author,description}=req.body;
   try {
