@@ -46,7 +46,7 @@ export const validFile = (req, res, next) => {
 
 
 export const updateFile=(req,res,next)=>{
-  const imageFile=req.file?.image;
+  const imageFile=req.files?.image;
 
   if(!imageFile) next();
 

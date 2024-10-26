@@ -1,6 +1,7 @@
 import {Users} from "../models/Users.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
+import mongoose from "mongoose";
 
 
 export const getUsers= (req,res)=>{
@@ -61,6 +62,27 @@ export const registerUser=async (req,res)=>{
   } catch (err) {
     return res.status(404).json({error:`${err}`})
     
+  }
+
+}
+
+export const updateUser=async (req,res)=>{
+  const {id}=req.params;
+  try {
+    if(mongoose.isValidObjectId(id)){
+      const isExist=await Users.findById(id);
+      if (!isExist) return res.status(404).json({ message: 'user doesn\'t exist' });
+      await isExist.updateOne({
+        fullname: req.body.fullname || isExist.fullname,
+        email: req.body.email || isExist.email
+      });
+      return res.status(200).json({ message: 'user updated' });
+    }else{
+      return res.status(400).json({ message: 'please provide valid id' });
+    }
+    
+  } catch (err) {
+    return res.status(400).json({ error: `${err}` });
   }
 
 }

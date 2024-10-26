@@ -32,6 +32,24 @@ const productSchema=new mongoose.Schema({
     type:Number,
     default:0
   },
+  reviews:[
+    {
+      user:{
+        type:mongoose.SchemaTypes.ObjectId,
+        ref:'Users',
+        required:true
+      },
+      comment:{
+        type:String,
+        required:true
+      },
+      rating:{
+        type:String,
+        required:true
+      }
+
+    }
+  ],
   stock:{
     type:Number,
     default:0

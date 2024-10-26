@@ -16,6 +16,6 @@ const router=express.Router();
 
 router.route('/').get(getContact).all(notAllowed)
 router.route('/contact-submit').post(validate.body(schemaContact),submitContact).all(notAllowed)
-router.route('/contact/:id').delete(removeContact);
+router.route('/:id').delete(removeContact);
 
 export default router;  
